@@ -18,7 +18,7 @@ Whether you're guarding trade secrets or just flexing your cryptographic muscles
 ### 🧬 Clone the Arsenal
 ```bash
 git clone https://github.com/Prashant-chaps/Secure-PKI-Chat.git
-cd CryptoChatSecure
+cd Secure-PKI-Chat
 ````
 
 ### 🐳 Launch the Encrypted Arena
