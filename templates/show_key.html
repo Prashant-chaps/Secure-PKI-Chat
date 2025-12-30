@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your PKI Credentials | Secure PKI Chat</title>
+    <link rel="icon" href="https://img.icons8.com/ios-filled/512/lock--v1.png" type="image/png">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0d9488;
+            --primary-dark: #0b766e;
+            --secondary: #0b1220;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --glow: #22d3ee;
+            --panel: #0f172a;
+        }
+        
+        body {
+            font-family: 'Inter', 'Space Grotesk', sans-serif;
+            background: radial-gradient(140% 120% at 20% 20%, rgba(34, 211, 238, 0.15), transparent 40%),
+                        radial-gradient(120% 100% at 80% 0%, rgba(245, 158, 11, 0.12), transparent 42%),
+                        linear-gradient(135deg, #050a14 0%, #0b1220 35%, #0f172a 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+        
+        .text-gray-900 { color: #f8fafc !important; }
+        .text-gray-800 { color: #e2e8f0 !important; }
+        .text-gray-700 { color: #cbd5e1 !important; }
+        .text-gray-600 { color: #94a3b8 !important; }
+        .text-gray-500 { color: #94a3b8 !important; }
+        .text-blue-600 { color: #67e8f9 !important; }
+        .bg-blue-100 { background-color: rgba(34, 211, 238, 0.15) !important; }
+        .bg-white { background-color: rgba(15, 23, 42, 0.92) !important; color: #e2e8f0 !important; }
+        .bg-gray-50 { background-color: rgba(11, 18, 32, 0.85) !important; }
+
+        .btn-primary {
+            background: linear-gradient(120deg, var(--primary), var(--accent));
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(13, 148, 136, 0.35);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(120deg, var(--primary-dark), var(--primary));
+            transform: translateY(-1px);
+            box-shadow: 0 20px 35px rgba(13, 148, 136, 0.45);
+        }
+        
+        .btn-secondary {
+            background-color: #122033;
+            color: #e2e8f0;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #0d1626;
+            transform: translateY(-1px);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-danger:hover {
+            background-color: #b91c1c;
+            transform: translateY(-1px);
+        }
+        
+        .nav-link {
+            position: relative;
+            padding-bottom: 2px;
+        }
+        
+        .nav-link:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--accent);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover:after {
+            width: 100%;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(120deg, var(--glow), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .key-box {
+            position: relative;
+            background-color: #0b1625;
+            border: 1px solid #1f2937;
+            border-radius: 0.375rem;
+            overflow: hidden;
+        }
+        
+        .key-content {
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            padding: 1rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        
+        .key-box:hover .copy-btn {
+            opacity: 1;
+        }
+        
+        .cert-detail {
+            display: flex;
+            margin-bottom: 0.5rem;
+        }
+        
+        .cert-label {
+            font-weight: 500;
+            color: #4b5563;
+            min-width: 120px;
+        }
+        
+        .cert-value {
+            color: #1f2937;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .security-badge {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+        }
+
+        .theme-bar {
+            background: linear-gradient(120deg, #050a14, #0f172a 55%, #0d9488);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .theme-footer {
+            background: linear-gradient(120deg, #0f172a, #0b1220 60%, #0d9488);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-card {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 55px rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(12px);
+        }
+
+        .header-hero {
+            background: linear-gradient(135deg, rgba(13, 148, 136, 0.32), rgba(34, 211, 238, 0.14)),
+                        radial-gradient(80% 120% at 20% 20%, rgba(245, 158, 11, 0.12), transparent 60%),
+                        linear-gradient(120deg, #0b1625, #0f172a 60%, #0b1220);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .border-white/10, .border-white\/10 { border-color: rgba(255, 255, 255, 0.1) !important; }
+        .bg-red-900/30, .bg-red-900\/30 { background-color: rgba(127, 29, 29, 0.3) !important; }
+        .border-red-500/70, .border-red-500\/70 { border-color: rgba(239, 68, 68, 0.7) !important; }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+    <!-- Navigation -->
+    <nav class="theme-bar text-white p-4 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <h1 class="text-2xl font-bold">Secure<span class="gradient-text">PKI</span>Chat</h1>
+            </div>
+            <div class="hidden md:flex space-x-6 items-center">
+                <a href="{{ url_for('index') }}" class="nav-link">Home</a>
+                <a href="{{ url_for('register') }}" class="nav-link">Register</a>
+                <a href="{{ url_for('login') }}" class="nav-link">Login</a>
+                <div class="security-badge flex items-center space-x-2 bg-blue-600/20 px-3 py-1 rounded-full border border-blue-400/30">
+                    <i class="fas fa-shield-alt text-blue-300"></i>
+                    <span class="text-sm font-medium text-blue-100">End-to-End Encrypted</span>
+                </div>
+            </div>
+            <button class="md:hidden focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <div class="glass-card rounded-xl shadow-2xl overflow-hidden max-w-4xl mx-auto">
+            <!-- Header -->
+            <div class="header-hero p-6 border-b border-white/10">
+                <div class="flex items-center justify-center space-x-3">
+                    <div class="bg-blue-100 p-3 rounded-full">
+                        <i class="fas fa-key text-blue-600 text-xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800">Your PKI Credentials</h2>
+                </div>
+                <p class="text-center text-gray-600 mt-2">Welcome, <span class="font-semibold">{{ username }}</span>! Please securely store these credentials.</p>
+            </div>
+            
+            <div class="p-6">
+                <!-- Warning Alert -->
+                <div class="bg-red-900/30 border-l-4 border-red-500/70 p-4 mb-6 rounded">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-exclamation-triangle text-red-300"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-red-100">Security Notice</h3>
+                            <div class="mt-2 text-sm text-red-200">
+                                <p>These credentials are <strong>only shown once</strong> and cannot be recovered if lost. Store them securely and never share your private key.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Private Key Section -->
+                <div class="mb-8">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-xl font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-lock mr-2 text-blue-600"></i> Private Key
+                        </h3>
+                        <div class="flex space-x-2">
+                            <button id="download-key" class="btn-secondary text-white px-3 py-1 rounded text-sm flex items-center">
+                                <i class="fas fa-download mr-1"></i> Download
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="key-box">
+                        <div id="private-key" class="key-content">{{ private_key }}</div>
+                        <button id="copy-key" class="copy-btn btn-secondary text-white px-3 py-1 rounded text-sm flex items-center">
+                            <i class="fas fa-copy mr-1"></i> Copy
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Certificate Section -->
+                <div class="mb-8">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-xl font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-certificate mr-2 text-blue-600"></i> Digital Certificate
+                        </h3>
+                        <div class="flex space-x-2">
+                            <a href="{{ url_for('download_cert') }}" class="btn-secondary text-white px-3 py-1 rounded text-sm flex items-center">
+                                <i class="fas fa-download mr-1"></i> Download
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="key-box">
+                        <div id="certificate" class="key-content">{{ cert_pem }}</div>
+                        <button id="copy-cert" class="copy-btn btn-secondary text-white px-3 py-1 rounded text-sm flex items-center">
+                            <i class="fas fa-copy mr-1"></i> Copy
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Certificate Details -->
+                <div class="mb-8">
+                    <h3 class="text-xl font-bold text-gray-800 mb-3 flex items-center">
+                        <i class="fas fa-info-circle mr-2 text-blue-600"></i> Certificate Details
+                    </h3>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="cert-detail">
+                            <span class="cert-label">Subject:</span>
+                            <span class="cert-value">{{ cert_details.subject }}</span>
+                        </div>
+                        <div class="cert-detail">
+                            <span class="cert-label">Issuer:</span>
+                            <span class="cert-value">{{ cert_details.issuer }}</span>
+                        </div>
+                        <div class="cert-detail">
+                            <span class="cert-label">Serial Number:</span>
+                            <span class="cert-value">{{ cert_details.serial_number }}</span>
+                        </div>
+                        <div class="cert-detail">
+                            <span class="cert-label">Valid From:</span>
+                            <span class="cert-value">{{ cert_details.not_valid_before }}</span>
+                        </div>
+                        <div class="cert-detail">
+                            <span class="cert-label">Valid Until:</span>
+                            <span class="cert-value">{{ cert_details.not_valid_after }}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex flex-col space-y-3 mt-6">
+                    <a href="{{ url_for('login') }}" class="btn-primary text-white px-4 py-3 rounded-md font-medium w-full flex items-center justify-center space-x-2">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span>Proceed to Login</span>
+                    </a>
+                    <button id="download-all" class="btn-secondary text-white px-4 py-3 rounded-md font-medium w-full flex items-center justify-center space-x-2">
+                        <i class="fas fa-file-archive"></i>
+                        <span>Download All as ZIP</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="theme-footer text-white py-6">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center space-x-2 mb-4 md:mb-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    <span class="font-medium">SecurePKI<span class="text-blue-300">Chat</span></span>
+                </div>
+                <p class="text-blue-300 text-sm">&copy; 2025 Secure PKI Chat By Prashant Chapagain. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+<script>
+    function fallbackCopyTextToClipboard(text, buttonId) {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";  // Avoid scrolling to bottom
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        try {
+            const successful = document.execCommand('copy');
+            const button = document.getElementById(buttonId);
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-check mr-1"></i> Copied!';
+            setTimeout(() => {
+                button.innerHTML = originalText;
+            }, 2000);
+        } catch (err) {
+            console.error('Fallback: Copy failed', err);
+        }
+
+        document.body.removeChild(textArea);
+    }
+
+    function copyToClipboard(text, buttonId) {
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(text).then(() => {
+                const button = document.getElementById(buttonId);
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check mr-1"></i> Copied!';
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                }, 2000);
+            }).catch(err => {
+                console.error('Async: Could not copy text: ', err);
+                fallbackCopyTextToClipboard(text, buttonId);
+            });
+        } else {
+            fallbackCopyTextToClipboard(text, buttonId);
+        }
+    }
+
+    document.getElementById('copy-key').addEventListener('click', () => {
+        const keyText = document.getElementById('private-key').innerText.trim();
+        copyToClipboard(keyText, 'copy-key');
+    });
+
+    document.getElementById('copy-cert').addEventListener('click', () => {
+        const certText = document.getElementById('certificate').innerText.trim();
+        copyToClipboard(certText, 'copy-cert');
+    });
+
+    // Download private key
+    document.getElementById('download-key').addEventListener('click', () => {
+        const keyText = document.getElementById('private-key').innerText.trim();
+        const blob = new Blob([keyText], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'private_key.pem';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    });
+
+    // Download all as ZIP (placeholder)
+    document.getElementById('download-all').addEventListener('click', () => {
+        alert('This would trigger a server-side ZIP download in a real implementation');
+    });
+</script>
+
+</body>
+</html>

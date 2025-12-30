@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Login | PKI Chat</title>
+    <link rel="icon" href="https://img.icons8.com/ios-filled/512/lock--v1.png" type="image/png">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0d9488;
+            --primary-dark: #0b766e;
+            --secondary: #0b1220;
+            --accent: #f59e0b;
+            --glow: #22d3ee;
+            --panel: #0f172a;
+        }
+        
+        body {
+            font-family: 'Inter', 'Space Grotesk', sans-serif;
+            background: radial-gradient(140% 120% at 20% 20%, rgba(34, 211, 238, 0.15), transparent 40%),
+                        radial-gradient(120% 100% at 80% 0%, rgba(245, 158, 11, 0.12), transparent 42%),
+                        linear-gradient(135deg, #050a14 0%, #0b1220 35%, #0f172a 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+        
+        .text-gray-900 { color: #f8fafc !important; }
+        .text-gray-800 { color: #e2e8f0 !important; }
+        .text-gray-700 { color: #cbd5e1 !important; }
+        .text-gray-600 { color: #94a3b8 !important; }
+        .text-gray-500 { color: #94a3b8 !important; }
+        .text-blue-600 { color: #67e8f9 !important; }
+        .bg-blue-600/20 { background-color: rgba(13, 148, 136, 0.15) !important; }
+        .border-blue-400/30 { border-color: rgba(34, 211, 238, 0.3) !important; }
+        .bg-blue-100 { background-color: rgba(34, 211, 238, 0.15) !important; }
+        .border-white/10, .border-white\/10 { border-color: rgba(255, 255, 255, 0.1) !important; }
+        .bg-red-900/30, .bg-red-900\/30 { background-color: rgba(127, 29, 29, 0.3) !important; }
+        .border-red-500/70, .border-red-500\/70 { border-color: rgba(239, 68, 68, 0.7) !important; }
+        .bg-white { background-color: rgba(15, 23, 42, 0.92) !important; color: #e2e8f0 !important; }
+        .bg-gray-50 { background-color: rgba(11, 18, 32, 0.85) !important; }
+
+        .btn-primary {
+            background: linear-gradient(120deg, var(--primary), var(--accent));
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(13, 148, 136, 0.35);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(120deg, var(--primary-dark), var(--primary));
+            transform: translateY(-1px);
+            box-shadow: 0 20px 35px rgba(13, 148, 136, 0.45);
+        }
+        
+        .nav-link {
+            position: relative;
+            padding-bottom: 2px;
+        }
+        
+        .nav-link:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--accent);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover:after {
+            width: 100%;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(120deg, var(--glow), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .key-input {
+            font-family: 'Courier New', monospace;
+            background-color: #0b1625;
+            border: 1px solid #1f2937;
+            color: #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        
+        .key-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.25);
+        }
+        
+        .security-badge {
+            animation: pulse 2s infinite;
+        }
+        
+        .key-masked {
+            -webkit-text-security: disc;
+            text-security: disc;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+        }
+
+        .theme-bar {
+            background: linear-gradient(120deg, #050a14, #0f172a 55%, #0d9488);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .theme-footer {
+            background: linear-gradient(120deg, #0f172a, #0b1220 60%, #0d9488);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .header-hero {
+            background: linear-gradient(135deg, rgba(13, 148, 136, 0.28), rgba(34, 211, 238, 0.12)),
+                        radial-gradient(80% 120% at 20% 20%, rgba(245, 158, 11, 0.15), transparent 60%),
+                        linear-gradient(120deg, #0b1625, #0f172a 60%, #0b1220);
+        }
+
+        .glass-card {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 55px rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(12px);
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.4rem 0.75rem;
+            border-radius: 9999px;
+            background: rgba(13, 148, 136, 0.12);
+            border: 1px solid rgba(34, 211, 238, 0.25);
+            color: #a5f3fc;
+            font-size: 0.75rem;
+            letter-spacing: 0.01em;
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.14), transparent);
+        }
+
+        input, textarea, select {
+            background-color: #0b1625;
+            border-color: #1f2937;
+            color: #e2e8f0;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.25);
+            outline: none;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+    <!-- Navigation -->
+    <nav class="theme-bar text-white p-4 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <h1 class="text-2xl font-bold">Secure<span class="gradient-text">PKI</span>Chat</h1>
+            </div>
+            <div class="hidden md:flex space-x-6 items-center">
+                <a href="{{ url_for('index') }}" class="nav-link">Home</a>
+                <a href="{{ url_for('register') }}" class="nav-link">Register</a>
+                <a href="{{ url_for('login') }}" class="nav-link font-semibold">Login</a>
+                <div class="security-badge flex items-center space-x-2 bg-blue-600/20 px-3 py-1 rounded-full border border-blue-400/30">
+                    <i class="fas fa-shield-alt text-blue-300"></i>
+                    <span class="text-sm font-medium text-blue-100">End-to-End Encrypted</span>
+                </div>
+            </div>
+            <button class="md:hidden focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow flex items-center justify-center p-4">
+        <div class="glass-card rounded-2xl shadow-2xl overflow-hidden w-full max-w-xl border border-white/10">
+            <div class="header-hero p-6 border-b border-white/10">
+                <div class="flex items-center justify-between flex-wrap gap-3">
+                    <div class="flex items-center space-x-3">
+                        <div class="bg-blue-100 p-3 rounded-full border border-white/10">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800">Secure Login</h2>
+                            <p class="text-sm text-gray-600">Authenticate with your private key</p>
+                        </div>
+                    </div>
+                    <div class="chip">
+                        <i class="fas fa-shield-check"></i>
+                        Zero-knowledge: keys stay local
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-6">
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        <div class="bg-red-900/30 border-l-4 border-red-500/70 text-red-100 p-4 mb-6 rounded">
+                            <div class="flex items-center">
+                                <i class="fas fa-exclamation-circle mr-2"></i>
+                                <p>{{ messages[0] }}</p>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endwith %}
+                
+                <form method="POST" class="space-y-6">
+                    <div>
+                        <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-user text-gray-400"></i>
+                            </div>
+                            <input type="text" name="username" id="username" class="block w-full pl-10 pr-3 py-3 rounded-lg border border-white/10 bg-[#0b1625] shadow-sm focus:outline-none focus:ring-2 focus:ring-[#22d3ee]/70 focus:border-[#22d3ee]" placeholder="Enter your username" autocomplete="username" required>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label for="private_key" class="block text-sm font-medium text-gray-700">Private Key</label>
+                            <button type="button" id="toggle-key-visibility" class="text-xs text-blue-300 hover:text-white">
+                                <i class="fas fa-eye mr-1"></i> Show Key
+                            </button>
+                        </div>
+                        <textarea name="private_key" id="private_key" class="key-input key-masked block w-full px-3 py-3 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#22d3ee]/70 focus:border-[#22d3ee]" rows="8" placeholder="-----BEGIN PRIVATE KEY-----&#10;Your private key here&#10;-----END PRIVATE KEY-----" required></textarea>
+                        <p class="mt-1 text-xs text-gray-500">
+                            <i class="fas fa-info-circle mr-1"></i> Your private key is never stored on our servers
+                        </p>
+                    </div>
+                    
+                    <div class="pt-2">
+                        <button type="submit" class="btn-primary text-white px-4 py-3 rounded-lg font-medium w-full flex items-center justify-center space-x-2">
+                            <i class="fas fa-lock"></i>
+                            <span>Authenticate</span>
+                        </button>
+                    </div>
+                    
+                    <div class="text-center text-sm text-gray-600">
+                        Don't have an account? 
+                        <a href="{{ url_for('register') }}" class="text-blue-600 hover:text-blue-800 font-medium">Register</a>
+                    </div>
+                </form>
+                <div class="divider my-6"></div>
+
+                <div class="grid gap-3 text-xs text-gray-500">
+                    <div class="flex items-start space-x-2">
+                        <i class="fas fa-key text-blue-300 mt-0.5"></i>
+                        <p>Paste the full PEM block including BEGIN/END lines. We do not send keys to the server until you submit.</p>
+                    </div>
+                    <div class="flex items-start space-x-2">
+                        <i class="fas fa-shield-alt text-blue-300 mt-0.5"></i>
+                        <p>Use a private, trusted device. Consider clearing this page after use if you are on a shared machine.</p>
+                    </div>
+                    <div class="flex items-start space-x-2">
+                        <i class="fas fa-file-import text-blue-300 mt-0.5"></i>
+                        <p>Need a key pair? <a href="{{ url_for('register') }}" class="text-blue-600 hover:text-blue-400 font-semibold">Generate one on registration</a>.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="theme-footer text-white py-6">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center space-x-2 mb-4 md:mb-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    <span class="font-medium">SecurePKI<span class="text-blue-300">Chat</span></span>
+                </div>
+                <p class="text-blue-300 text-sm">&copy; 2025 Secure PKI Chat By Prashant Chapagain. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Toggle private key visibility
+        const toggleKeyVisibility = document.getElementById('toggle-key-visibility');
+        const privateKeyField = document.getElementById('private_key');
+        let isKeyVisible = false;
+        
+        toggleKeyVisibility.addEventListener('click', () => {
+            isKeyVisible = !isKeyVisible;
+            
+            if (isKeyVisible) {
+                privateKeyField.classList.remove('key-masked');
+                toggleKeyVisibility.innerHTML = '<i class="fas fa-eye-slash mr-1"></i> Hide Key';
+            } else {
+                privateKeyField.classList.add('key-masked');
+                toggleKeyVisibility.innerHTML = '<i class="fas fa-eye mr-1"></i> Show Key';
+            }
+        });
+    </script>
+</body>
+</html>
