@@ -103,8 +103,7 @@ Let’s craft the most secure chat system out there — **together**.
 ---
 
 ## 🎉 Credits & Legacy
-
-**Forged with passion on June 20, 2025.**
+**Forged with passion on December 20, 2025.**
 Keep the crypto flame alive. 🧙‍♂️🔥
 
 
