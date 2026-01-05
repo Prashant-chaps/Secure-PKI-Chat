@@ -1,0 +1,45 @@
+name: CryptoChat Security Scan
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 🔍 1. Python dependency vulnerability scan
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install safety bandit
+
+      - name: Scan Python dependencies (Safety)
+        run: safety check || true
+
+      # 🔐 2. Static code analysis (Bandit)
+      - name: Run Bandit security scan
+        run: bandit -r . -x tests || true
+
+      # 🐳 3. Docker image vulnerability scan (Trivy)
+      - name: Build Docker image
+        run: docker build -t cryptochatsecure .
+
+      - name: Scan Docker image with Trivy
+        uses: aquasecurity/trivy-action@0.20.0
+        with:
+          image-ref: cryptochatsecure
+          format: table
+          exit-code: 0
+          severity: HIGH,CRITICAL
