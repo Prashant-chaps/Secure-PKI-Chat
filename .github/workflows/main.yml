@@ -2,26 +2,43 @@ version: "3.9"
 
 services:
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: cryptochat_app
     restart: unless-stopped
+
     ports:
       - "5000:5000"
 
     environment:
-      - FLASK_ENV=production
-      - FLASK_APP=app.py
-      - SECRET_KEY=${SECRET_KEY}
-      - DATABASE_URL=sqlite:////data/cryptochat.db
+      FLASK_ENV: production
+      FLASK_APP: app.py
+      SECRET_KEY: ${SECRET_KEY}
+      DATABASE_URL: sqlite:////data/cryptochat.db
+      REDIS_URL: redis://redis:6379/0
 
     volumes:
-      - .:/app
       - app_data:/data
       - certs:/app/certs
       - uploads:/app/uploads
 
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+    security_opt:
+      - no-new-privileges:true
+
+    read_only: true
+    tmpfs:
+      - /tmp
 
     networks:
       - cryptochat_net
@@ -30,8 +47,18 @@ services:
     image: redis:7-alpine
     container_name: cryptochat_redis
     restart: unless-stopped
+
+    command: redis-server --appendonly yes
+
     volumes:
       - redis_data:/data
+
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
     networks:
       - cryptochat_net
 
