@@ -1,73 +1,30 @@
-version: "3.9"
+name: CryptoChat Docker CI
 
-services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: cryptochat_app
-    restart: unless-stopped
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
-    ports:
-      - "5000:5000"
+jobs:
+  docker-build-test:
+    runs-on: ubuntu-latest
 
-    environment:
-      FLASK_ENV: production
-      FLASK_APP: app.py
-      SECRET_KEY: ${SECRET_KEY}
-      DATABASE_URL: sqlite:////data/cryptochat.db
-      REDIS_URL: redis://redis:6379/0
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    volumes:
-      - app_data:/data
-      - certs:/app/certs
-      - uploads:/app/uploads
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v3
 
-    depends_on:
-      redis:
-        condition: service_healthy
+      - name: Build Docker images
+        run: docker compose build
 
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      - name: Start containers
+        run: docker compose up -d
 
-    security_opt:
-      - no-new-privileges:true
+      - name: Verify running containers
+        run: docker ps
 
-    read_only: true
-    tmpfs:
-      - /tmp
-
-    networks:
-      - cryptochat_net
-
-  redis:
-    image: redis:7-alpine
-    container_name: cryptochat_redis
-    restart: unless-stopped
-
-    command: redis-server --appendonly yes
-
-    volumes:
-      - redis_data:/data
-
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-    networks:
-      - cryptochat_net
-
-volumes:
-  app_data:
-  certs:
-  uploads:
-  redis_data:
-
-networks:
-  cryptochat_net:
-    driver: bridge
+      - name: Stop containers
+        run: docker compose down
