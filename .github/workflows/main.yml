@@ -1,0 +1,46 @@
+version: "3.9"
+
+services:
+  app:
+    build: .
+    container_name: cryptochat_app
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+
+    environment:
+      - FLASK_ENV=production
+      - FLASK_APP=app.py
+      - SECRET_KEY=${SECRET_KEY}
+      - DATABASE_URL=sqlite:////data/cryptochat.db
+
+    volumes:
+      - .:/app
+      - app_data:/data
+      - certs:/app/certs
+      - uploads:/app/uploads
+
+    depends_on:
+      - redis
+
+    networks:
+      - cryptochat_net
+
+  redis:
+    image: redis:7-alpine
+    container_name: cryptochat_redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    networks:
+      - cryptochat_net
+
+volumes:
+  app_data:
+  certs:
+  uploads:
+  redis_data:
+
+networks:
+  cryptochat_net:
+    driver: bridge
