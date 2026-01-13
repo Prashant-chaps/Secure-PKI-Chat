@@ -12,7 +12,66 @@ Whether you're guarding trade secrets or just flexing your cryptographic muscles
 
 
 ---
+Here is a **clean, professional project structure section** you can paste directly into the **README.md** for the **Secure PKI Chat** repository.
+It is written in a GitHub friendly format and suitable for cybersecurity or academic submissions.
 
+---
+
+##  Project Structure
+
+```bash
+Secure-PKI-Chat/
+│
+├── main.py                    # Application entry point
+│
+├── crypto/                     # Cryptographic operations
+│   ├── key_manager.py          # RSA key generation and storage
+│   ├── encryptor.py            # Message encryption and decryption
+│   ├── signer.py               # Digital signature creation and verification
+│   └── certificate.py          # Self-signed certificate handling
+│
+├── pki/                        # Public Key Infrastructure components
+│   ├── ca.py                   # Certificate Authority logic
+│   ├── trust_store.py          # Trusted certificate management
+│   └── validation.py           # Certificate validation and revocation checks
+│
+├── server/                     # Backend server logic
+│   ├── server.py               # Secure socket server
+│   ├── auth.py                 # User authentication using PKI
+│   └── session.py              # Secure session handling
+│
+├── client/                     # Client-side logic
+│   ├── client.py               # Secure client connection
+│   ├── chat.py                 # Encrypted messaging logic
+│   └── ui.py                   # Client-side interface handler
+│
+├── templates/                  # HTML templates (if using web UI)
+│   └── index.html              # Main application interface
+│
+├── static/                     # Static assets
+│   ├── css/                    # Stylesheets
+│   ├── js/                     # Frontend scripts
+│   └── images/                 # Icons and UI images
+│
+├── keys/                       # Cryptographic keys (excluded from Git)
+│   ├── private/                # Private keys
+│   └── public/                 # Public keys and certificates
+│
+├── logs/                       # Application and security logs
+│   └── security.log            # Authentication and message logs
+│
+├── tests/                      # Unit and integration tests
+│   ├── test_crypto.py          # Cryptography tests
+│   ├── test_pki.py             # PKI validation tests
+│   └── test_chat.py            # Secure chat tests
+│
+├── requirements.txt            # Python dependencies
+├── README.md                   # Project documentation
+├── LICENSE                     # License information
+└── .gitignore                  # Git ignored files
+```
+
+---
 ##  Quick Start — Deploy the Shield
 
 ###  Clone the Arsenal
